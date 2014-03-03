@@ -82,13 +82,19 @@ class TemplateHelpers extends Nette\Object
 			$count = NULL;
 		}
 
-		$translatedMessage = $this->translator->translate($message, $count, (array) $parameters, $domain, $locale);
-
-		if ($this->wrapInHtmlObject !== TRUE) {
-			return $translatedMessage;
+		if ($this->wrapInHtmlObject === TRUE) {
+			foreach ((array) $parameters as &$arg) {
+				$arg = \Nette\Templating\Helpers::escapeHtml($arg);
+			}
 		}
 
-		return Html::el()->setHtml($translatedMessage);
+		$translatedMessage = $this->translator->translate($message, $count, (array) $parameters, $domain, $locale);
+
+		if ($this->wrapInHtmlObject === TRUE) {
+			return Html::el()->setHtml($translatedMessage);
+		}
+
+		return $translatedMessage;
 	}
 
 }
